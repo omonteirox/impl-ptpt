@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition - NF Automation'
+define service ZSNF_INVOICE_SRV {
+  expose ZC_NF_PROCESSING as NfProcessing;
+  expose ZC_NF_UPLOAD     as NfUpload;
+}

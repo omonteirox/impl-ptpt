@@ -1,0 +1,42 @@
+managed implementation in class zbp_i_nf_upload unique;
+  strict ( 2 );
+  with draft;
+
+  define behavior for ZI_NF_UPLOAD alias NfUpload
+  persistent table zsnf_upload_t
+  draft table zsnf_upload_d
+  lock master total etag LastChangedAt
+  etag master LocalLastChangedAt
+  authorization master ( global )
+  {
+    create;
+    update;
+    delete;
+
+    draft action Edit;
+    draft action Activate optimized;
+    draft action Discard;
+    draft action Resume;
+    draft determine action Prepare;
+
+    action ( features : instance ) ImportInvoices result [1] $self;
+
+    field ( numbering : managed, readonly ) Uuid;
+    field ( readonly ) UploadStatus, ResultMessage;
+    field ( features : instance ) XlsxFileContent;
+
+    mapping for zsnf_upload_t
+    {
+      Uuid               = uuid;
+      UploadStatus       = upload_status;
+      ResultMessage      = result_message;
+      XlsxFileContent    = xlsx_file_content;
+      XlsxFileMimetype   = xlsx_file_mimetype;
+      XlsxFilename       = xlsx_filename;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+  }

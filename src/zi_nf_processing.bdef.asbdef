@@ -1,0 +1,62 @@
+managed implementation in class zbp_i_nf_processing unique;
+  strict ( 2 );
+  with draft;
+
+  define behavior for ZI_NF_PROCESSING alias NfProcessing
+  persistent table zsnf_nf_t
+  draft table zsnf_nf_d
+  lock master total etag LastChangedAt
+  authorization master ( global )
+  etag master LocalLastChangedAt
+  {
+    create;
+    update;
+    delete;
+
+    draft action Edit;
+    draft action Activate optimized;
+    draft action Discard;
+    draft action Resume;
+    draft determine action Prepare;
+
+    action ( features : instance ) ProcessInvoices result [1] $self;
+
+    determination setInitialStatus on modify { create; }
+
+    field ( numbering : managed, readonly ) Uuid;
+    field ( readonly ) ProcessStatus, SupplierInvoice, FiscalYear, BrNotaFiscal, ErrorMessage;
+    field ( features : instance ) XlsxFileContent;
+
+    mapping for zsnf_nf_t
+    {
+      Uuid               = uuid;
+      ProcessStatus      = process_status;
+      SupplierInvoice    = supplier_invoice;
+      FiscalYear         = fiscal_year;
+      BrNotaFiscal       = br_nota_fiscal;
+      ErrorMessage       = error_message;
+      CreatedBy          = created_by;
+      CreatedAt          = created_at;
+      LastChangedBy      = last_changed_by;
+      LastChangedAt      = last_changed_at;
+      LocalLastChangedAt = local_last_changed_at;
+      CompanyCode        = company_code;
+      PurchaseOrder      = purchase_order;
+      PoItem             = po_item;
+      InvoiceGrossAmount = invoice_gross_amount;
+      ItemAmount         = item_amount;
+      ProtocolNumber     = protocol_number;
+      DocumentDate       = document_date;
+      NfAccessKey        = nf_access_key;
+      NfCategory         = nf_category;
+      NfNumber           = nf_number;
+      HeaderText         = header_text;
+      PaymentTerms       = payment_terms;
+      PaymentBlock       = payment_block;
+      GlAccount          = gl_account;
+      CostCenter         = cost_center;
+      XlsxFileContent    = xlsx_file_content;
+      XlsxFileMimetype   = xlsx_file_mimetype;
+      XlsxFilename       = xlsx_filename;
+    }
+  }
