@@ -6,7 +6,9 @@
 "ZI_NF_UPLOAD"
 ],
 "ASSOCIATED":
-[],
+[
+"ZC_NF_PROCESSING"
+],
 "BASE":
 [],
 "ANNO_REF":

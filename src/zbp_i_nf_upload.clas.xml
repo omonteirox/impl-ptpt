@@ -1,11 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZBP_I_NF_PROCESSING</CLSNAME>
+    <CLSNAME>ZBP_I_NF_UPLOAD</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Behavior Implementation - NF Automation Pipefy</DESCRIPT>
+    <DESCRIPT>Behavior Implementation - NF Upload</DESCRIPT>
     <CATEGORY>06</CATEGORY>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
