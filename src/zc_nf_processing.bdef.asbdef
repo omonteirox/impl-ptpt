@@ -1,0 +1,9 @@
+define behavior for ZC_NF_PROCESSING alias NfLine
+{
+  use update;
+  use delete;
+
+  use action ProcessInvoice;
+
+  use association _Upload;
+}

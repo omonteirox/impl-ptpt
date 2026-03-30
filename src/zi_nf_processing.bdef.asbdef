@@ -1,0 +1,48 @@
+define behavior for ZI_NF_PROCESSING alias NfLine
+persistent table zsnf_nf_t
+draft table zsnf_nf_d
+lock dependent by _Upload
+authorization dependent by _Upload
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  action ( features : instance ) ProcessInvoice result [1] $self;
+
+  association _Upload;
+
+  field ( numbering : managed, readonly ) Uuid;
+  field ( readonly ) ParentUuid, ProcessStatus, SupplierInvoice, FiscalYear, BrNotaFiscal, ErrorMessage;
+
+  mapping for zsnf_nf_t
+  {
+    Uuid               = uuid;
+    ParentUuid         = parent_uuid;
+    ProcessStatus      = process_status;
+    SupplierInvoice    = supplier_invoice;
+    FiscalYear         = fiscal_year;
+    BrNotaFiscal       = br_nota_fiscal;
+    ErrorMessage       = error_message;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LastChangedAt      = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+    CompanyCode        = company_code;
+    PurchaseOrder      = purchase_order;
+    PoItem             = po_item;
+    InvoiceGrossAmount = invoice_gross_amount;
+    ItemAmount         = item_amount;
+    ProtocolNumber     = protocol_number;
+    DocumentDate       = document_date;
+    NfAccessKey        = nf_access_key;
+    NfCategory         = nf_category;
+    NfNumber           = nf_number;
+    HeaderText         = header_text;
+    PaymentTerms       = payment_terms;
+    PaymentBlock       = payment_block;
+    GlAccount          = gl_account;
+    CostCenter         = cost_center;
+  }
+}
