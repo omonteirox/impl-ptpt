@@ -1,18 +1,30 @@
-  projection;
-  strict ( 2 );
-  use draft;
+projection;
+strict ( 2 );
+use draft;
 
-  define behavior for ZC_NF_UPLOAD alias NfUpload
-  {
-    use create;
-    use update;
-    use delete;
+define behavior for ZC_NF_UPLOAD alias NfUpload
+{
+  use create;
+  use update;
+  use delete;
 
-    use action Edit;
-    use action Activate;
-    use action Discard;
-    use action Resume;
-    use action Prepare;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
 
-    use action ImportInvoices;
-  }
+  use action ProcessAllInvoices;
+
+  use association _NfLines { create; }
+}
+
+define behavior for ZC_NF_PROCESSING alias NfLine
+{
+  use update;
+  use delete;
+
+  use action ProcessInvoice;
+
+  use association _Upload;
+}

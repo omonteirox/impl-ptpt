@@ -17,12 +17,15 @@ define root view entity ZC_NF_UPLOAD
   as projection on ZI_NF_UPLOAD
 {
   @UI.facet: [{ id: 'General', type: #IDENTIFICATION_REFERENCE,
-                label: 'Upload', position: 10 }]
+                label: 'Upload', position: 10 },
+              { id: 'NfLines', type: #LINEITEM_REFERENCE,
+                label: 'Notas Fiscais', position: 20,
+                targetElement: '_NfLines' }]
 
   @UI.lineItem: [
     { position: 10, label: 'UUID' },
-    { type: #FOR_ACTION, dataAction: 'ImportInvoices',
-      label: 'Importar NFs', position: 10 }
+    { type: #FOR_ACTION, dataAction: 'ProcessAllInvoices',
+      label: 'Processar NFs', position: 10 }
   ]
   @UI.identification: [{ position: 10, label: 'UUID' }]
   key Uuid,
@@ -54,5 +57,8 @@ define root view entity ZC_NF_UPLOAD
   @UI.hidden: true
   LastChangedAt,
   @UI.hidden: true
-  LocalLastChangedAt
+  LocalLastChangedAt,
+
+  /* Composition */
+  _NfLines : redirected to composition child ZC_NF_PROCESSING
 }

@@ -1,42 +1,94 @@
 managed implementation in class zbp_i_nf_upload unique;
-  strict ( 2 );
-  with draft;
+strict ( 2 );
+with draft;
 
-  define behavior for ZI_NF_UPLOAD alias NfUpload
-  persistent table zsnf_upload_t
-  draft table zsnf_upload_d
-  lock master total etag LastChangedAt
-  etag master LocalLastChangedAt
-  authorization master ( global )
+define behavior for ZI_NF_UPLOAD alias NfUpload
+persistent table zsnf_upload_t
+draft table zsnf_upload_d
+lock master total etag LastChangedAt
+etag master LocalLastChangedAt
+authorization master ( global )
+{
+  create;
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Resume;
+  draft determine action Prepare;
+
+  determination parseXlsx on save { field XlsxFileContent; }
+
+  action ( features : instance ) ProcessAllInvoices result [1] $self;
+
+  association _NfLines { create; }
+
+  field ( numbering : managed, readonly ) Uuid;
+  field ( readonly ) UploadStatus, ResultMessage;
+
+  mapping for zsnf_upload_t
   {
-    create;
-    update;
-    delete;
-
-    draft action Edit;
-    draft action Activate optimized;
-    draft action Discard;
-    draft action Resume;
-    draft determine action Prepare;
-
-    action ( features : instance ) ImportInvoices result [1] $self;
-
-    field ( numbering : managed, readonly ) Uuid;
-    field ( readonly ) UploadStatus, ResultMessage;
-    field ( features : instance ) XlsxFileContent;
-
-    mapping for zsnf_upload_t
-    {
-      Uuid               = uuid;
-      UploadStatus       = upload_status;
-      ResultMessage      = result_message;
-      XlsxFileContent    = xlsx_file_content;
-      XlsxFileMimetype   = xlsx_file_mimetype;
-      XlsxFilename       = xlsx_filename;
-      CreatedBy          = created_by;
-      CreatedAt          = created_at;
-      LastChangedBy      = last_changed_by;
-      LastChangedAt      = last_changed_at;
-      LocalLastChangedAt = local_last_changed_at;
-    }
+    Uuid               = uuid;
+    UploadStatus       = upload_status;
+    ResultMessage      = result_message;
+    XlsxFileContent    = xlsx_file_content;
+    XlsxFileMimetype   = xlsx_file_mimetype;
+    XlsxFilename       = xlsx_filename;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LastChangedAt      = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
   }
+}
+
+define behavior for ZI_NF_PROCESSING alias NfLine
+persistent table zsnf_nf_t
+draft table zsnf_nf_d
+lock dependent by _Upload
+authorization dependent by _Upload
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  action ( features : instance ) ProcessInvoice result [1] $self;
+
+  association _Upload;
+
+  field ( numbering : managed, readonly ) Uuid;
+  field ( readonly ) ParentUuid, ProcessStatus, SupplierInvoice, FiscalYear, BrNotaFiscal, ErrorMessage;
+
+  mapping for zsnf_nf_t
+  {
+    Uuid               = uuid;
+    ParentUuid         = parent_uuid;
+    ProcessStatus      = process_status;
+    SupplierInvoice    = supplier_invoice;
+    FiscalYear         = fiscal_year;
+    BrNotaFiscal       = br_nota_fiscal;
+    ErrorMessage       = error_message;
+    CreatedBy          = created_by;
+    CreatedAt          = created_at;
+    LastChangedBy      = last_changed_by;
+    LastChangedAt      = last_changed_at;
+    LocalLastChangedAt = local_last_changed_at;
+    CompanyCode        = company_code;
+    PurchaseOrder      = purchase_order;
+    PoItem             = po_item;
+    InvoiceGrossAmount = invoice_gross_amount;
+    ItemAmount         = item_amount;
+    ProtocolNumber     = protocol_number;
+    DocumentDate       = document_date;
+    NfAccessKey        = nf_access_key;
+    NfCategory         = nf_category;
+    NfNumber           = nf_number;
+    HeaderText         = header_text;
+    PaymentTerms       = payment_terms;
+    PaymentBlock       = payment_block;
+    GlAccount          = gl_account;
+    CostCenter         = cost_center;
+  }
+}

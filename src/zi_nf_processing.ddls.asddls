@@ -6,11 +6,14 @@
 
 @Metadata.ignorePropagatedAnnotations: true
 
-define root view entity ZI_NF_PROCESSING
+define view entity ZI_NF_PROCESSING
   as select from zsnf_nf_t
+  association to parent ZI_NF_UPLOAD as _Upload on $projection.ParentUuid = _Upload.Uuid
 
 {
   key uuid                  as Uuid,
+
+      parent_uuid           as ParentUuid,
 
       process_status        as ProcessStatus,
       supplier_invoice      as SupplierInvoice,
@@ -39,14 +42,5 @@ define root view entity ZI_NF_PROCESSING
       gl_account            as GlAccount,
       cost_center           as CostCenter,
 
-      @Semantics.largeObject: { mimeType: 'XlsxFileMimetype',
-                                fileName: 'XlsxFilename',
-                                contentDispositionPreference: #ATTACHMENT,
-                                acceptableMimeTypes: [ 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ] }
-      xlsx_file_content     as XlsxFileContent,
-
-      @Semantics.mimeType: true
-      xlsx_file_mimetype    as XlsxFileMimetype,
-
-      xlsx_filename         as XlsxFilename
+      _Upload
 }

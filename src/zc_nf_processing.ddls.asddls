@@ -7,24 +7,23 @@
 @Metadata.allowExtensions: true
 @Metadata.ignorePropagatedAnnotations: true
 
-@UI.createHidden: false
-
 @UI.headerInfo: { typeName: 'Nota Fiscal',
                   typeNamePlural: 'Notas Fiscais',
                   title: { type: #STANDARD, value: 'NfNumber' },
                   description: { type: #STANDARD, value: 'SupplierInvoice' } }
 
-define root view entity ZC_NF_PROCESSING
+define view entity ZC_NF_PROCESSING
     provider contract transactional_query
   as projection on ZI_NF_PROCESSING
 
 {
-      @UI.facet: [ { id: 'GeneralInfo', type: #IDENTIFICATION_REFERENCE, label: 'Informações Gerais', position: 10 },
-                   { id: 'Upload',      type: #IDENTIFICATION_REFERENCE, label: 'Arquivo',            position: 20 } ]
       @UI.identification: [ { position: 10, label: 'UUID' } ]
       @UI.lineItem: [ { position: 10, label: 'UUID' },
-                      { type: #FOR_ACTION, dataAction: 'ProcessInvoices', label: 'Processar NFs', position: 10 } ]
+                      { type: #FOR_ACTION, dataAction: 'ProcessInvoice', label: 'Processar NF', position: 10 } ]
   key Uuid,
+
+      @UI.hidden: true
+      ParentUuid,
 
       @UI.identification: [ { position: 20, label: 'Status' } ]
       @UI.lineItem: [ { position: 20, label: 'Status' } ]
@@ -66,11 +65,11 @@ define root view entity ZC_NF_PROCESSING
       @UI.identification: [ { position: 110, label: 'Valor Item' } ]
       ItemAmount,
 
-      @UI.identification: [ { position: 120, label: 'Protocolo Autorização' } ]
+      @UI.identification: [ { position: 120, label: 'Protocolo Autorizacao' } ]
       ProtocolNumber,
 
-      @UI.identification: [ { position: 130, label: 'Data Emissão' } ]
-      @UI.lineItem: [ { position: 130, label: 'Data Emissão' } ]
+      @UI.identification: [ { position: 130, label: 'Data Emissao' } ]
+      @UI.lineItem: [ { position: 130, label: 'Data Emissao' } ]
       DocumentDate,
 
       @UI.identification: [ { position: 140, label: 'Chave de Acesso' } ]
@@ -94,7 +93,7 @@ define root view entity ZC_NF_PROCESSING
       @UI.identification: [ { position: 190, label: 'Bloq. Pagamento' } ]
       PaymentBlock,
 
-      @UI.identification: [ { position: 200, label: 'Conta Razão' } ]
+      @UI.identification: [ { position: 200, label: 'Conta Razao' } ]
       GlAccount,
 
       @UI.identification: [ { position: 210, label: 'Centro de Custo' } ]
@@ -115,12 +114,6 @@ define root view entity ZC_NF_PROCESSING
       @UI.hidden: true
       LocalLastChangedAt,
 
-      @UI.identification: [ { position: 220, label: 'Arquivo XLSX' } ]
-      XlsxFileContent,
-
-      @UI.hidden: true
-      XlsxFileMimetype,
-
-      @UI.hidden: true
-      XlsxFilename
+      /* Parent association */
+      _Upload : redirected to parent ZC_NF_UPLOAD
 }
