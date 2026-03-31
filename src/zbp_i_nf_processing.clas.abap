@@ -2,7 +2,7 @@ CLASS zbp_i_nf_processing DEFINITION
   PUBLIC
   ABSTRACT
   FINAL
-  FOR BEHAVIOR OF zi_nf_upload.
+  FOR BEHAVIOR OF zi_nf_processing.
 
   PUBLIC SECTION.
   PROTECTED SECTION.

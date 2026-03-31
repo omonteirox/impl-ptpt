@@ -18,10 +18,10 @@ CLASS zcl_nf_xlsx_reader DEFINITION
     TYPES:
       BEGIN OF ty_xlsx_row,
         purchase_order       TYPE c LENGTH 50,
+        po_item              TYPE c LENGTH 50,
         invoice_gross_amount TYPE c LENGTH 50,
         protocol_number      TYPE c LENGTH 50,
         document_date        TYPE c LENGTH 50,
-        due_date             TYPE c LENGTH 50,
         nf_access_key        TYPE c LENGTH 50,
         nf_category          TYPE c LENGTH 50,
         nf_number            TYPE c LENGTH 50,
@@ -29,6 +29,8 @@ CLASS zcl_nf_xlsx_reader DEFINITION
         payment_terms        TYPE c LENGTH 50,
         payment_block        TYPE c LENGTH 50,
         company_code         TYPE c LENGTH 50,
+        gl_account           TYPE c LENGTH 50,
+        cost_center          TYPE c LENGTH 50,
       END OF ty_xlsx_row,
       tt_xlsx_rows TYPE STANDARD TABLE OF ty_xlsx_row WITH EMPTY KEY.
 
@@ -84,20 +86,24 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
             CONTINUE.
           ENDIF.
 
-          DATA(lv_po)     = CONV string( ls_raw-purchase_order ).
-          DATA(lv_amount) = CONV string( ls_raw-invoice_gross_amount ).
-          DATA(lv_proto)  = CONV string( ls_raw-protocol_number ).
-          DATA(lv_date)   = CONV string( ls_raw-document_date ).
-          DATA(lv_key)    = CONV string( ls_raw-nf_access_key ).
-          DATA(lv_cat)    = CONV string( ls_raw-nf_category ).
-          DATA(lv_nf)     = CONV string( ls_raw-nf_number ).
-          DATA(lv_text)   = CONV string( ls_raw-header_text ).
-          DATA(lv_terms)  = CONV string( ls_raw-payment_terms ).
-          DATA(lv_block)  = CONV string( ls_raw-payment_block ).
-          DATA(lv_comp)   = CONV string( ls_raw-company_code ).
+          DATA(lv_po)      = CONV string( ls_raw-purchase_order ).
+          DATA(lv_po_item) = CONV string( ls_raw-po_item ).
+          DATA(lv_amount)  = CONV string( ls_raw-invoice_gross_amount ).
+          DATA(lv_proto)   = CONV string( ls_raw-protocol_number ).
+          DATA(lv_date)    = CONV string( ls_raw-document_date ).
+          DATA(lv_key)     = CONV string( ls_raw-nf_access_key ).
+          DATA(lv_cat)     = CONV string( ls_raw-nf_category ).
+          DATA(lv_nf)      = CONV string( ls_raw-nf_number ).
+          DATA(lv_text)    = CONV string( ls_raw-header_text ).
+          DATA(lv_terms)   = CONV string( ls_raw-payment_terms ).
+          DATA(lv_block)   = CONV string( ls_raw-payment_block ).
+          DATA(lv_comp)    = CONV string( ls_raw-company_code ).
+          DATA(lv_gl)      = CONV string( ls_raw-gl_account ).
+          DATA(lv_cc)      = CONV string( ls_raw-cost_center ).
 
           DATA(ls_line) = VALUE zsnf_xlsx_line_s(
             purchase_order       = lv_po
+            po_item              = lv_po_item
             invoice_gross_amount = parse_amount( lv_amount )
             item_amount          = parse_amount( lv_amount )
             protocol_number      = lv_proto
@@ -109,6 +115,8 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
             payment_terms        = lv_terms
             payment_block        = parse_payment_block( lv_block )
             company_code         = lv_comp
+            gl_account           = lv_gl
+            cost_center          = lv_cc
           ).
 
           APPEND ls_line TO rt_lines.
