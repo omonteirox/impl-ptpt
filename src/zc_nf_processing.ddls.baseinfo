@@ -7,10 +7,13 @@
 ],
 "ASSOCIATED":
 [
-"ZC_NF_UPLOAD"
+"ZC_NF_UPLOAD",
+"ZI_NF_UPLOAD"
 ],
 "BASE":
-[],
+[
+"ZI_NF_PROCESSING"
+],
 "ANNO_REF":
 [],
 "SCALAR_FUNCTION":

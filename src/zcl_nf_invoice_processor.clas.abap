@@ -144,9 +144,6 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
 
     TRY.
         DATA(lo_request) = io_client->get_http_request( ).
-        lo_request->set_uri_path(
-          '/sap/opu/odata/sap/API_SUPPLIERINVOICE_PROCESS_SRV/$metadata'
-        ).
         lo_request->set_header_fields( VALUE #(
           ( name = 'x-csrf-token' value = 'fetch' )
         ) ).
@@ -233,8 +230,6 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
           ENDIF.
 
         ENDIF.
-
-        lo_client->close( ).
 
       CATCH cx_http_dest_provider_error INTO DATA(lx_dest).
         rs_result-success = abap_false.

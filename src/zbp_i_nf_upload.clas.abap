@@ -1,16 +1,13 @@
-CLASS zbp_i_nf_upload DEFINITION
-  PUBLIC
-  ABSTRACT
-  FINAL
-  FOR BEHAVIOR OF zi_nf_upload.
+class ZBP_I_NF_UPLOAD definition
+  public
+  create private .
 
-  PUBLIC SECTION.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
+public section.
+protected section.
+private section.
 ENDCLASS.
 
 
 
-CLASS zbp_i_nf_upload IMPLEMENTATION.
+CLASS ZBP_I_NF_UPLOAD IMPLEMENTATION.
 ENDCLASS.

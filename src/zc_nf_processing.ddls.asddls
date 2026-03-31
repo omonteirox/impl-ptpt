@@ -1,7 +1,5 @@
 @AbapCatalog.viewEnhancementCategory: [ #NONE ]
-
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-
 @EndUserText.label: 'Consumption CDS View - NF Automation'
 
 @Metadata.allowExtensions: true
