@@ -50,8 +50,8 @@ CLASS lhc_nf_upload IMPLEMENTATION.
         FIELDS ( XlsxFileContent XlsxFilename )
         WITH CORRESPONDING #( keys )
       RESULT DATA(uploads)
-      FAILED failed
-      REPORTED reported.
+      FAILED DATA(lf_failed)
+      REPORTED DATA(lf_reported).
 
     DELETE uploads WHERE XlsxFileContent IS INITIAL.
     CHECK uploads IS NOT INITIAL.

@@ -11,8 +11,8 @@ CLASS ltc_test_insert IMPLEMENTATION.
 
   METHOD test_insert.
 
-    MODIFY ENTITIES OF zi_nf_processing
-      ENTITY zi_nf_processing
+    MODIFY ENTITIES OF zi_nf_upload
+      ENTITY NfLine
       CREATE FIELDS (
         CompanyCode
         PurchaseOrder
