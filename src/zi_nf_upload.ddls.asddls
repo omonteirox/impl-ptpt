@@ -1,4 +1,5 @@
  @AbapCatalog.viewEnhancementCategory: [#NONE]
+  @AccessControl.authorizationCheck: #NOT_REQUIRED
   @EndUserText.label: 'Interface CDS - Upload NF'
   @Metadata.ignorePropagatedAnnotations: true
   define root view entity ZI_NF_UPLOAD
