@@ -13,7 +13,6 @@
                   description: { type: #STANDARD, value: 'SupplierInvoice' } }
 
 define view entity ZC_NF_PROCESSING
-  provider contract transactional_query
   as projection on ZI_NF_PROCESSING
 
 {
