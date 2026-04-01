@@ -12,35 +12,44 @@ CLASS ltc_test_insert IMPLEMENTATION.
   METHOD test_insert.
 
     MODIFY ENTITIES OF zi_nf_upload
-      ENTITY NfLine
-      CREATE FIELDS (
-        CompanyCode
-        PurchaseOrder
-        PoItem
-        InvoiceGrossAmount
-        ItemAmount
-        ProtocolNumber
-        DocumentDate
-        NfCategory
-        NfNumber
-        PaymentTerms
-      )
-      WITH VALUE #( (
-        %cid               = 'TEST001'
-        CompanyCode        = 'JA01'
-        PurchaseOrder      = '4500001266'
-        PoItem             = '00010'
-        InvoiceGrossAmount = '4307.12'
-        ItemAmount         = '3745.32'
-        ProtocolNumber     = '135260082468034'
-        DocumentDate       = '20260108'
-        NfCategory         = 'YA'
-        NfNumber           = '13329-TEST'
-        PaymentTerms       = 'D030'
-      ) )
-      REPORTED DATA(ls_reported)
+      ENTITY NfUpload
+        CREATE FIELDS ( XlsxFilename )
+        WITH VALUE #( (
+          %cid         = 'UPLOAD001'
+          XlsxFilename = 'test_upload.xlsx'
+        ) )
+        CREATE BY \_NfLines
+        FIELDS (
+          CompanyCode
+          PurchaseOrder
+          PoItem
+          InvoiceGrossAmount
+          ItemAmount
+          ProtocolNumber
+          DocumentDate
+          NfCategory
+          NfNumber
+          PaymentTerms
+        )
+        WITH VALUE #( (
+          %cid_ref = 'UPLOAD001'
+          %target = VALUE #( (
+            %cid               = 'NF001'
+            CompanyCode        = 'JA01'
+            PurchaseOrder      = '4500001266'
+            PoItem             = '00010'
+            InvoiceGrossAmount = '4307.12'
+            ItemAmount         = '3745.32'
+            ProtocolNumber     = '135260082468034'
+            DocumentDate       = '20260108'
+            NfCategory         = 'YA'
+            NfNumber           = '13329-TEST'
+            PaymentTerms       = 'D030'
+          ) )
+        ) )
+      MAPPED DATA(ls_mapped)
       FAILED DATA(ls_failed)
-      MAPPED DATA(ls_mapped).
+      REPORTED DATA(ls_reported).
 
     COMMIT ENTITIES.
 
