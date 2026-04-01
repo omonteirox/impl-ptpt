@@ -48,7 +48,7 @@ define behavior for ZI_NF_PROCESSING alias NfLine
 persistent table zsnf_nf_t
 draft table zsnf_nf_d
 lock dependent by _Upload
-authorization dependent by _Upload
+authorization master ( global )
 etag master LocalLastChangedAt
 {
   update;

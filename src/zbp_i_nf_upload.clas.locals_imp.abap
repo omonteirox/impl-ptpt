@@ -251,6 +251,9 @@ ENDCLASS.
 CLASS lhc_nf_line DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR NfLine RESULT result.
+
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR NfLine RESULT result.
 
@@ -260,6 +263,12 @@ ENDCLASS.
 
 
 CLASS lhc_nf_line IMPLEMENTATION.
+
+  METHOD get_global_authorizations.
+    result = VALUE #( %update                = if_abap_behv=>auth-allowed
+                      %delete                = if_abap_behv=>auth-allowed
+                      %action-ProcessInvoice = if_abap_behv=>auth-allowed ).
+  ENDMETHOD.
 
   METHOD get_instance_features.
     READ ENTITIES OF zi_nf_upload IN LOCAL MODE
