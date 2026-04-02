@@ -62,13 +62,13 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
   METHOD process_invoice.
 
     " Valida Ctg.NF
-    IF is_line-nf_category = 'YA'.
+    IF is_line-nf_category = 'YA' OR is_line-nf_category = 'C7'.
       DATA(lv_payload) = build_payload_ya( is_line ).
     ELSEIF is_line-nf_category = 'SE'.
       lv_payload = build_payload_se( is_line ).
     ELSE.
       rs_result-success = abap_false.
-      rs_result-error_message = |Ctg.NF inválida: { is_line-nf_category }. Use YA ou SE.|.
+      rs_result-error_message = |Ctg.NF inválida: { is_line-nf_category }. Use YA, SE ou C7.|.
       RETURN.
     ENDIF.
 
@@ -83,6 +83,9 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
     DATA(lv_date) = format_date( is_line-document_date ).
     DATA(lv_amount) = |{ is_line-invoice_gross_amount DECIMALS = 2 }|.
     DATA(lv_item_amount) = |{ is_line-item_amount DECIMALS = 2 }|.
+    DATA(lv_po_item) = COND string( WHEN is_line-po_item IS NOT INITIAL
+                                    THEN is_line-po_item
+                                    ELSE '00010' ).
 
     rv_payload = |\{"CompanyCode":"{ is_line-company_code }",| &&
                  |"DocumentDate":"{ lv_date }",| &&
@@ -97,7 +100,7 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
                  |"to_SuplrInvcItemPurOrdRef":[\{| &&
                  |"SupplierInvoiceItem":"000001",| &&
                  |"PurchaseOrder":"{ is_line-purchase_order }",| &&
-                 |"PurchaseOrderItem":"{ is_line-po_item }",| &&
+                 |"PurchaseOrderItem":"{ lv_po_item }",| &&
                  |"DocumentCurrency":"BRL",| &&
                  |"SupplierInvoiceItemAmount":"{ lv_item_amount }",| &&
                  |"TaxCode":"00"| &&
@@ -111,6 +114,9 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
     DATA(lv_date) = format_date( is_line-document_date ).
     DATA(lv_amount) = |{ is_line-invoice_gross_amount DECIMALS = 2 }|.
     DATA(lv_item_amount) = |{ is_line-item_amount DECIMALS = 2 }|.
+    DATA(lv_po_item) = COND string( WHEN is_line-po_item IS NOT INITIAL
+                                    THEN is_line-po_item
+                                    ELSE '00010' ).
 
     rv_payload = |\{"CompanyCode":"{ is_line-company_code }",| &&
                  |"DocumentDate":"{ lv_date }",| &&
@@ -122,10 +128,10 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
                  |"PaymentTerms":"{ is_line-payment_terms }",| &&
                  |"SupplierInvoiceStatus":"A",| &&
                  |"TaxIsCalculatedAutomatically":true,| &&
-                 |"to_SupplierInvoiceItemGLAcct":[\{| &&
+                 |"to_SuplrInvcItemPurOrdRef":[\{| &&
                  |"SupplierInvoiceItem":"000001",| &&
-                 |"GLAccount":"{ is_line-gl_account }",| &&
-                 |"CostCenter":"{ is_line-cost_center }",| &&
+                 |"PurchaseOrder":"{ is_line-purchase_order }",| &&
+                 |"PurchaseOrderItem":"{ lv_po_item }",| &&
                  |"DocumentCurrency":"BRL",| &&
                  |"SupplierInvoiceItemAmount":"{ lv_item_amount }",| &&
                  |"TaxCode":"00"| &&

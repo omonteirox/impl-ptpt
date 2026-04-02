@@ -80,7 +80,7 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
 
         LOOP AT lt_raw_rows INTO DATA(ls_raw).
 
-          IF ls_raw-purchase_order IS INITIAL AND ls_raw-nf_number IS INITIAL.
+          IF ls_raw-purchase_order IS INITIAL.
             CONTINUE.
           ENDIF.
 
