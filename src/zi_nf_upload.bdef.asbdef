@@ -23,7 +23,7 @@ authorization master ( global )
 
   action ( features : instance ) ProcessAllInvoices result [1] $self;
 
-  association _NfLines { create; }
+  association _NfLines { create; with draft; }
 
   field ( numbering : managed, readonly ) Uuid;
   field ( readonly ) UploadStatus, ResultMessage;
@@ -56,7 +56,7 @@ etag master LocalLastChangedAt
 
   action ( features : instance ) ProcessInvoice result [1] $self;
 
-  association _Upload;
+  association _Upload { with draft; }
 
   field ( numbering : managed, readonly ) Uuid;
   field ( readonly ) ParentUuid, ProcessStatus, SupplierInvoice, FiscalYear, BrNotaFiscal, ErrorMessage;

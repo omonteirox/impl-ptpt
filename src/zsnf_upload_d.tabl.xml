@@ -42,6 +42,7 @@
      <ADMINFIELD>0</ADMINFIELD>
      <PRECFIELD>SYCH_BDL_DRAFT_ADMIN_INC</PRECFIELD>
      <MASK>      S</MASK>
+     <GROUPNAME>%ADMIN</GROUPNAME>
      <DDTEXT>Standard Include for Draft Administration (BDL Syntax Check)</DDTEXT>
      <COMPTYPE>S</COMPTYPE>
     </DD03P>
