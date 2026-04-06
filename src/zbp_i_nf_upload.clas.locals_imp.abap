@@ -81,11 +81,11 @@ CLASS lhc_nf_upload IMPLEMENTATION.
             ENTITY NfUpload
               CREATE BY \_NfLines
               FIELDS ( CompanyCode        PurchaseOrder
-                       PoItem             DocumentDate   NfNumber
-                       NfCategory         NfAccessKey    InvoiceGrossAmount
-                       ItemAmount         ProtocolNumber HeaderText
-                       PaymentTerms       PaymentBlock   GlAccount
-                       CostCenter         ProcessStatus )
+                       PoItem             DocumentDate   BaselineDate
+                       NfNumber           NfCategory     NfAccessKey
+                       InvoiceGrossAmount ItemAmount     ProtocolNumber
+                       HeaderText         PaymentTerms   PaymentBlock
+                       GlAccount          CostCenter     ProcessStatus )
               WITH VALUE #( FOR line IN xlsx_lines INDEX INTO i
                 ( %tky                 = <upload>-%tky
                   %target = VALUE #( (
@@ -95,6 +95,7 @@ CLASS lhc_nf_upload IMPLEMENTATION.
                     PurchaseOrder      = line-purchase_order
                     PoItem             = line-po_item
                     DocumentDate       = line-document_date
+                    BaselineDate       = line-baseline_date
                     NfNumber           = line-nf_number
                     NfCategory         = line-nf_category
                     NfAccessKey        = line-nf_access_key
@@ -179,6 +180,7 @@ CLASS lhc_nf_upload IMPLEMENTATION.
           purchase_order      = <nf>-PurchaseOrder
           po_item             = <nf>-PoItem
           document_date       = <nf>-DocumentDate
+          baseline_date       = <nf>-BaselineDate
           nf_number           = <nf>-NfNumber
           nf_category         = <nf>-NfCategory
           nf_access_key       = <nf>-NfAccessKey
@@ -251,9 +253,6 @@ ENDCLASS.
 CLASS lhc_nf_line DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR NfLine RESULT result.
-
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR NfLine RESULT result.
 
@@ -263,12 +262,6 @@ ENDCLASS.
 
 
 CLASS lhc_nf_line IMPLEMENTATION.
-
-  METHOD get_global_authorizations.
-    result = VALUE #( %update                = if_abap_behv=>auth-allowed
-                      %delete                = if_abap_behv=>auth-allowed
-                      %action-ProcessInvoice = if_abap_behv=>auth-allowed ).
-  ENDMETHOD.
 
   METHOD get_instance_features.
     READ ENTITIES OF zi_nf_upload IN LOCAL MODE
@@ -309,6 +302,7 @@ CLASS lhc_nf_line IMPLEMENTATION.
         purchase_order      = <nf>-PurchaseOrder
         po_item             = <nf>-PoItem
         document_date       = <nf>-DocumentDate
+        baseline_date       = <nf>-BaselineDate
         nf_number           = <nf>-NfNumber
         nf_category         = <nf>-NfCategory
         nf_access_key       = <nf>-NfAccessKey

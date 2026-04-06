@@ -69,6 +69,10 @@ define view entity ZC_NF_PROCESSING
       @UI.lineItem: [ { position: 130, label: 'Data Emissao' } ]
       DocumentDate,
 
+      @UI.identification: [ { position: 135, label: 'Data Validade' } ]
+      @UI.lineItem: [ { position: 135, label: 'Data Validade' } ]
+      BaselineDate,
+
       @UI.identification: [ { position: 140, label: 'Chave de Acesso' } ]
       NfAccessKey,
 

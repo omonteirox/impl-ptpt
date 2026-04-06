@@ -56,6 +56,9 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
 
   METHOD read_xlsx.
 
+    " Leitura do arquivo XLSX (erro aqui = arquivo corrompido/invalido)
+    DATA lt_raw_rows TYPE tt_xlsx_rows.
+
     TRY.
         DATA(lo_xlsx) = xco_cp_xlsx=>document->for_file_content(
           iv_file_content = iv_file_content
@@ -72,22 +75,28 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
           )->from_row( xco_cp_xlsx=>coordinate->for_numeric_value( 2 )
           )->get_pattern( ).
 
-        DATA lt_raw_rows TYPE tt_xlsx_rows.
-
         lo_worksheet->select( lo_pattern
           )->row_stream( )->operation->write_to( REF #( lt_raw_rows )
           )->execute( ).
 
-        LOOP AT lt_raw_rows INTO DATA(ls_raw).
+      CATCH cx_root.
+        CLEAR rt_lines.
+        RETURN.
+    ENDTRY.
 
-          IF ls_raw-purchase_order IS INITIAL.
-            CONTINUE.
-          ENDIF.
+    " Processamento linha a linha (erro em uma linha nao descarta as demais)
+    LOOP AT lt_raw_rows INTO DATA(ls_raw).
 
+      IF ls_raw-purchase_order IS INITIAL.
+        CONTINUE.
+      ENDIF.
+
+      TRY.
           DATA(lv_po)      = CONV string( ls_raw-purchase_order ).
           DATA(lv_amount)  = CONV string( ls_raw-invoice_gross_amount ).
           DATA(lv_proto)   = CONV string( ls_raw-protocol_number ).
           DATA(lv_date)    = CONV string( ls_raw-document_date ).
+          DATA(lv_base)    = CONV string( ls_raw-baseline_date ).
           DATA(lv_key)     = CONV string( ls_raw-nf_access_key ).
           DATA(lv_cat)     = CONV string( ls_raw-nf_category ).
           DATA(lv_nf)      = CONV string( ls_raw-nf_number ).
@@ -96,12 +105,21 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
           DATA(lv_block)   = CONV string( ls_raw-payment_block ).
           DATA(lv_comp)    = CONV string( ls_raw-company_code ).
 
+          CONDENSE lv_po NO-GAPS.
+          CONDENSE lv_proto NO-GAPS.
+          CONDENSE lv_key NO-GAPS.
+          CONDENSE lv_cat NO-GAPS.
+          CONDENSE lv_nf NO-GAPS.
+          CONDENSE lv_terms NO-GAPS.
+          CONDENSE lv_comp NO-GAPS.
+
           DATA(ls_line) = VALUE zsnf_xlsx_line_s(
             purchase_order       = lv_po
             invoice_gross_amount = parse_amount( lv_amount )
             item_amount          = parse_amount( lv_amount )
             protocol_number      = lv_proto
             document_date        = parse_date( lv_date )
+            baseline_date        = parse_date( lv_base )
             nf_access_key        = lv_key
             nf_category          = lv_cat
             nf_number            = lv_nf
@@ -113,36 +131,41 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
 
           APPEND ls_line TO rt_lines.
 
-        ENDLOOP.
+        CATCH cx_root.
+          CONTINUE.
+      ENDTRY.
 
-      CATCH cx_root.
-        CLEAR rt_lines.
-    ENDTRY.
+    ENDLOOP.
 
   ENDMETHOD.
 
   METHOD parse_date.
     DATA(lv_clean) = iv_date_str.
+    CONDENSE lv_clean NO-GAPS.
 
     IF lv_clean IS INITIAL.
       rv_date = '00000000'.
       RETURN.
     ENDIF.
 
-    " Formato ISO: YYYY-MM-DD
-    IF lv_clean(4) CO '0123456789' AND lv_clean+4(1) = '-'.
+    DATA(lv_len) = strlen( lv_clean ).
+
+    " Formato ISO: YYYY-MM-DD (min 10 chars)
+    IF lv_len >= 10
+       AND lv_clean(4) CO '0123456789'
+       AND lv_clean+4(1) = '-'.
       rv_date = |{ lv_clean(4) }{ lv_clean+5(2) }{ lv_clean+8(2) }|.
       RETURN.
     ENDIF.
 
-    " Formato DD/MM/YYYY ou DD.MM.YYYY
+    " Formato DD/MM/YYYY ou DD.MM.YYYY (min 10 chars)
     REPLACE ALL OCCURRENCES OF '/' IN lv_clean WITH '.'.
-    IF lv_clean CA '.'.
+    IF lv_len >= 10 AND lv_clean CA '.'.
       rv_date = |{ lv_clean+6(4) }{ lv_clean+3(2) }{ lv_clean(2) }|.
       RETURN.
     ENDIF.
 
-    rv_date = lv_clean.
+    rv_date = '00000000'.
   ENDMETHOD.
 
   METHOD parse_amount.
@@ -161,13 +184,18 @@ CLASS zcl_nf_xlsx_reader IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_payment_block.
-    IF iv_value IS INITIAL
-    OR iv_value = 'Não'
-    OR iv_value = 'Nao'
-    OR iv_value = 'N'.
+    IF iv_value IS INITIAL.
+      rv_block = ''.
+      RETURN.
+    ENDIF.
+
+    DATA(lv_first) = iv_value(1).
+    TRANSLATE lv_first TO UPPER CASE.
+
+    " N = Não/Nao/N (sem bloqueio); qualquer outro = chave do bloqueio
+    IF lv_first = 'N'.
       rv_block = ''.
     ELSE.
-      DATA(lv_first) = iv_value(1).
       rv_block = lv_first.
     ENDIF.
   ENDMETHOD.
