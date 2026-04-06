@@ -11,7 +11,7 @@ TYPES:
         supplier_invoice TYPE belnr_d,
         fiscal_year      TYPE gjahr,
         br_nota_fiscal   TYPE belnr_d,
-        error_message    TYPE symsgv,
+        error_message    TYPE c LENGTH 255,
       END OF ty_result.
 
     METHODS process_invoice
@@ -81,6 +81,7 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
   METHOD build_payload_ya.
 
     DATA(lv_date) = format_date( is_line-document_date ).
+    DATA(lv_baseline) = format_date( is_line-baseline_date ).
     DATA(lv_amount) = |{ is_line-invoice_gross_amount DECIMALS = 2 }|.
     DATA(lv_item_amount) = |{ is_line-item_amount DECIMALS = 2 }|.
     DATA(lv_po_item) = COND string( WHEN is_line-po_item IS NOT INITIAL
@@ -90,6 +91,8 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
     rv_payload = |\{"CompanyCode":"{ is_line-company_code }",| &&
                  |"DocumentDate":"{ lv_date }",| &&
                  |"PostingDate":"{ lv_date }",| &&
+                 COND #( WHEN lv_baseline IS NOT INITIAL
+                         THEN |"BaselineDate":"{ lv_baseline }",| ) &&
                  |"DocumentCurrency":"BRL",| &&
                  |"InvoiceGrossAmount":"{ lv_amount }",| &&
                  |"SupplierInvoiceIDByInvcgParty":"{ is_line-nf_number }",| &&
@@ -112,6 +115,7 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
   METHOD build_payload_se.
 
     DATA(lv_date) = format_date( is_line-document_date ).
+    DATA(lv_baseline) = format_date( is_line-baseline_date ).
     DATA(lv_amount) = |{ is_line-invoice_gross_amount DECIMALS = 2 }|.
     DATA(lv_item_amount) = |{ is_line-item_amount DECIMALS = 2 }|.
     DATA(lv_po_item) = COND string( WHEN is_line-po_item IS NOT INITIAL
@@ -121,6 +125,8 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
     rv_payload = |\{"CompanyCode":"{ is_line-company_code }",| &&
                  |"DocumentDate":"{ lv_date }",| &&
                  |"PostingDate":"{ lv_date }",| &&
+                 COND #( WHEN lv_baseline IS NOT INITIAL
+                         THEN |"BaselineDate":"{ lv_baseline }",| ) &&
                  |"DocumentCurrency":"BRL",| &&
                  |"InvoiceGrossAmount":"{ lv_amount }",| &&
                  |"SupplierInvoiceIDByInvcgParty":"{ is_line-nf_number }",| &&
@@ -142,6 +148,10 @@ CLASS ZCL_NF_INVOICE_PROCESSOR IMPLEMENTATION.
 
   METHOD format_date.
     " Converte DATUM (YYYYMMDD) para ISO 8601 (YYYY-MM-DDT00:00:00)
+    IF iv_date IS INITIAL OR iv_date = '00000000'.
+      rv_date = ''.
+      RETURN.
+    ENDIF.
     rv_date = |{ iv_date(4) }-{ iv_date+4(2) }-{ iv_date+6(2) }T00:00:00|.
   ENDMETHOD.
 

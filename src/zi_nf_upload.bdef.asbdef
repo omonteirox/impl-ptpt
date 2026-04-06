@@ -48,7 +48,7 @@ define behavior for ZI_NF_PROCESSING alias NfLine
 persistent table zsnf_nf_t
 draft table zsnf_nf_d
 lock dependent by _Upload
-authorization master ( global )
+authorization dependent by _Upload
 etag master LocalLastChangedAt
 {
   update;
@@ -82,6 +82,7 @@ etag master LocalLastChangedAt
     ItemAmount         = item_amount;
     ProtocolNumber     = protocol_number;
     DocumentDate       = document_date;
+    BaselineDate       = baseline_date;
     NfAccessKey        = nf_access_key;
     NfCategory         = nf_category;
     NfNumber           = nf_number;

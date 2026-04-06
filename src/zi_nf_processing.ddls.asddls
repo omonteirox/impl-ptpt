@@ -33,6 +33,7 @@ define view entity ZI_NF_PROCESSING
       item_amount           as ItemAmount,
       protocol_number       as ProtocolNumber,
       document_date         as DocumentDate,
+      baseline_date         as BaselineDate,
       nf_access_key         as NfAccessKey,
       nf_category           as NfCategory,
       nf_number             as NfNumber,
